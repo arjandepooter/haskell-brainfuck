@@ -14,7 +14,7 @@ import           Data.Char                                ( ord
                                                           )
 import           System.IO
 
-data Expr = Inc | Dec | MoveLeft | MoveRight | Get | Put | Loop [Expr] deriving (Show)
+data Expr = Inc | Dec | MoveLeft | MoveRight | Get | Put | Loop [Expr] | Comment Char | Noop deriving (Show)
 type Program = [Expr]
 
 -- quick fix to reopen stdin
@@ -37,6 +37,7 @@ runExpr expr tape = case expr of
     Loop exprs -> if current tape == 0
         then return tape
         else runProgram' tape exprs >>= runExpr expr
+    _ -> return tape
 
 runProgram' :: Tape -> Program -> IO Tape
 runProgram' = foldM (flip runExpr)

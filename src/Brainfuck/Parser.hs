@@ -20,14 +20,20 @@ charToExpr c = case c of
     '-' -> Dec
     '.' -> Put
     ',' -> Get
+    _   -> Noop
+
+commentParser :: Parser Expr
+commentParser = Comment <$> noneOf "<>+-.,[]"
 
 loopParser :: Parser Expr
 loopParser = Loop <$> between (char '[') (char ']') (many expressionParser)
 
 expressionParser :: Parser Expr
 expressionParser =
-    loopParser <|> (charToExpr <$> oneOf "<>+-.,") <?> "expression, \"[\""
+    loopParser
+        <|> commentParser
+        <|> (charToExpr <$> oneOf "<>+-.,")
+        <?> "expression, \"[\""
 
 parseBrainfuck :: String -> Either ParseError Program
-parseBrainfuck =
-    parse (many expressionParser <* eof) "" . filter (`elem` "<>+-.,[]")
+parseBrainfuck = parse (many expressionParser <* eof) ""
