@@ -8,6 +8,7 @@ where
 import           Brainfuck.Tape
 import           Control.Monad                            ( foldM
                                                           , when
+                                                          , void
                                                           )
 import           Data.Char                                ( ord
                                                           , chr
@@ -43,6 +44,4 @@ runProgram' :: Tape -> Program -> IO Tape
 runProgram' = foldM (flip runExpr)
 
 runProgram :: Program -> IO ()
-runProgram program = do
-    runProgram' newTape program
-    return ()
+runProgram program = void $ runProgram' newTape program
